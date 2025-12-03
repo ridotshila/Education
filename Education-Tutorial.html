@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Education Escrow Smart Contract Tutorial</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #fdfdfd;
+      padding: 2px;
+      line-height: 1.7;
+      color: #222;
+      margin: auto;
+    }
+    h1, h2, h3 {
+      color: #002b45;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+    code {
+      background: #eee;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    a {
+      color: #0077cc;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    ul, ol {
+      padding-left: 1.2em;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🎓 Education Escrow Smart Contract – Full Tutorial</h1>
+<p>This tutorial explains the full logic of your Education Escrow smart contract written in Plutus V2, including milestone-based tuition release, scholarship payouts, refunds, and certificate NFT minting.</p>
+<hr>
+
+<h2>📚 Table of Contents</h2>
+<ol>
+  <li><a href="#purpose">🎯 Purpose of the Contract</a></li>
+  <li><a href="#datum">📄 Datum Types Explained</a></li>
+  <li><a href="#redeemer">🔄 Redeemer Actions</a></li>
+  <li><a href="#helpers">🛠️ Helper Functions</a></li>
+  <li><a href="#validator">🧠 Core Validator Logic</a></li>
+  <li><a href="#release">🏫 Milestone Release Logic</a></li>
+  <li><a href="#cert">🎓 Certificate NFT Minting</a></li>
+  <li><a href="#scholarships">💰 Scholarship Settlement Logic</a></li>
+  <li><a href="#compile">⚙️ Script Compilation</a></li>
+  <li><a href="#workflow">🚀 Off-chain Workflow</a></li>
+  <li><a href="#testing">🧪 Testing Scenarios</a></li>
+</ol>
+<hr>
+
+<h2 id="purpose">1. 🎯 Purpose of the Contract</h2>
+<p>This validator implements a complete on-chain education funding mechanism with milestone-based tuition release, scholarships, refunds, and certificate NFT issuance.</p>
+
+<h2 id="datum">2. 📄 Datum Types Explained</h2>
+<h3>📌 Scholarship</h3>
+<pre><code>data Scholarship = Scholarship
+  { schPkh :: PubKeyHash
+  , schAmt :: Integer
+  }</code></pre>
+
+<h3>📌 Milestone</h3>
+<pre><code>data Milestone = Milestone
+  { mIndex :: Integer
+  , mAmount :: Integer
+  , mDueAt :: POSIXTime
+  }</code></pre>
+
+<h3>📌 EducationEscrow</h3>
+<pre><code>data EducationEscrow = EducationEscrow
+  { payer         :: PubKeyHash
+  , student       :: PubKeyHash
+  , school        :: PubKeyHash
+  , totalAmount   :: Integer
+  , milestones    :: [Milestone]
+  , scholarships  :: [Scholarship]
+  , claimed       :: [Integer]
+  , certIssuer    :: PubKeyHash
+  , certTokenName :: BuiltinByteString
+  , certIssued    :: Bool
+  }</code></pre>
+
+<h2 id="redeemer">3. 🔄 Redeemer Actions</h2>
+<pre><code>data Action = Lock | Release Integer | Refund | IssueCert</code></pre>
+
+<h2 id="helpers">4. 🛠️ Helper Functions</h2>
+<ul>
+  <li><code>pubKeyHashAddress</code></li>
+  <li><code>valuePaidTo</code></li>
+  <li><code>milestoneByIndex</code></li>
+  <li><code>isNotClaimed</code></li>
+  <li><code>scholarshipsPaidOk</code></li>
+</ul>
+
+<h2 id="validator">5. 🧠 Core Validator Logic</h2>
+<p>The validator enforces rules for each action including Lock, Release, Refund, and IssueCert.</p>
+
+<h2 id="release">6. 🏫 Milestone Release Logic</h2>
+<ul>
+  <li>Valid milestone exists</li>
+  <li>Not already claimed</li>
+  <li>School signature required</li>
+  <li>School must receive its exact amount</li>
+  <li>Scholarships must be fully paid</li>
+</ul>
+
+<h2 id="cert">7. 🎓 Certificate NFT Minting</h2>
+<ul>
+  <li>Issuer signature required</li>
+  <li>Can't mint twice</li>
+  <li>Exactly 1 NFT</li>
+  <li>NFT must be sent to student</li>
+</ul>
+
+<h2 id="scholarships">8. 💰 Scholarship Settlement Logic</h2>
+<p>All scholarship entries must receive their specified <code>schAmt</code> amount in every Release transaction.</p>
+
+<h2 id="compile">9. ⚙️ Script Compilation</h2>
+<p>The file <code>education-escrow-validator.plutus</code> is produced using:</p>
+<pre><code>saveValidator</code></pre>
+
+<h2 id="workflow">10. 🚀 Off-chain Workflow</h2>
+<ul>
+  <li>Guardian locks funds</li>
+  <li>School releases milestones</li>
+  <li>Payer may refund remaining funds</li>
+  <li>School issues certificate NFT</li>
+</ul>
+
+<h2 id="testing">11. 🧪 Testing Scenarios</h2>
+<ul>
+  <li>Successful milestone release</li>
+  <li>Wrong signature fails</li>
+  <li>Double claim fails</li>
+  <li>Certificate minted once</li>
+</ul>
+
+</body>
+</html>
