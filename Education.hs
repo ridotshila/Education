@@ -220,7 +220,7 @@ saveValidator = do
     r <- writeFileTextEnvelope "education-escrow-validator.plutus" Nothing plutusScript
     case r of
       Left err -> print err
-      Right () -> putStrLn "✅ Education escrow validator written to: education-escrow-validator.plutus"
+      Right () -> putStrLn "SEducation escrow validator written to: education-escrow-validator.plutus"
 
 main :: IO ()
 main = saveValidator
